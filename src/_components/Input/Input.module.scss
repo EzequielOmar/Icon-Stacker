@@ -1,0 +1,27 @@
+.input {
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 1.4rem;
+
+  &:hover,
+  &:focus {
+  }
+
+  &::placeholder {
+    color: var(--color-medium-gray);
+    opacity: 1;
+  }
+
+  &.invalid {
+
+    &::placeholder {
+    }
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+
+    &::placeholder {
+    }
+  }
+}
