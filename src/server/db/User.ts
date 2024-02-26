@@ -1,4 +1,4 @@
-import prisma from "./_client";
+import { prisma } from "./_client";
 import { comparePasswords, hashPassword } from "@/utils/bcrypt";
 
 export interface publicUser {
@@ -19,7 +19,7 @@ function parsePublicUser(user: any): publicUser {
   };
 }
 
-class User {
+export default class User {
   static async createUser(email: string, password: string) {
     try {
       const hash = await hashPassword(password);
@@ -64,7 +64,10 @@ class User {
           email: email,
         },
       });
-      if (user && (await comparePasswords(password || "", user.password))) {
+      if (
+        user &&
+        (await comparePasswords(password || "", user.password || ""))
+      ) {
         return parsePublicUser(user);
       }
       return null;
@@ -86,5 +89,3 @@ class User {
     }
   }
 }
-
-export default User;

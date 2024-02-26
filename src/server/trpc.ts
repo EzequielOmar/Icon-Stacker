@@ -1,6 +1,6 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import { Context } from "./_context";
-import prisma from "./db/_client";
+import { prisma } from "./db/_client";
 
 const t = initTRPC.context<Context>().create();
 

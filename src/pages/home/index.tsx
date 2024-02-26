@@ -1,36 +1,89 @@
-import { useRedirectUnauthenticated } from "@/_middlewares/authMiddleware";
+import { useRedirectUnauthenticated } from "@/hooks/useRedirect";
 import trpc from "@/utils/trpc";
-import { signOut, useSession } from "next-auth/react";
-import React from "react";
+import { getSession, signOut, useSession } from "next-auth/react";
+import React, { FormEvent, useState } from "react";
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { AppRouter, appRouter } from "@/server/routers/_app";
+import { createContext } from "@/server/_context";
+import * as trpcNext from "@trpc/server/adapters/next";
 
-export default function Home() {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const ctx = await createContext({
+    req: context.req,
+    res: context.res,
+  } as trpcNext.CreateNextContextOptions);
+  if (!ctx.user)
+    return {
+      redirect: {
+        destination: "/signin",
+        permanent: false,
+      },
+    };
+  const helpers = createServerSideHelpers<AppRouter>({
+    router: appRouter,
+    ctx: ctx,
+  });
+  await helpers.allBookmarks.prefetch();
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+    },
+  };
+}
+
+export default function Home(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
   useRedirectUnauthenticated("/signin");
   const { data: session, status } = useSession();
-
-  const all = trpc.all.useQuery();
+  const [bookmarks, bookmarkQueries] = trpc.allBookmarks.useSuspenseQuery();
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
   };
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
+  const [url, setUrl] = useState("");
+  const [error, setError] = useState("");
+
+  const mutation = trpc.newBookmark.useMutation({
+    onSuccess: () => {
+      setUrl("");
+      setError("");
+      bookmarkQueries.refetch();
+    },
+    onError: (error: any) => {
+      setError(error.message);
+    },
+  });
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    mutation.mutate({ url });
+  };
 
   return (
     <>
       <div>home!</div>
-      <div>{session?.user?.email}</div>
-        <pre>{JSON.stringify(session?.user, null, 2)}</pre>
-      {session ? (
-        <button onClick={handleLogout}>Logout</button>
-      ) : (
-        <div>Not logged in</div>
-      )}
-      {all.data ? (
+      <pre>{JSON.stringify(session?.user, null, 2)}</pre>
+
+      <button onClick={handleLogout}>Logout</button>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="URL"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+        />
+        <button type="submit">Add Bookmark</button>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </form>
+
+      {bookmarks?.length ? (
         <>
           <span>Data:</span>
-          <pre>{JSON.stringify(all.data, null, 2)}</pre>
+          <pre>{JSON.stringify(bookmarks, null, 2)}</pre>
         </>
       ) : (
         "no data"

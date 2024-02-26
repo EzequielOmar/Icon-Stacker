@@ -19,7 +19,16 @@ model User {
   last_name   String?
   picture String?
   is_verified Boolean   @default(false)
+  bookmarks Bookmark[]
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
   deleted_at  DateTime?
+}
+
+model Bookmark {
+  id       String  @id @default(uuid()) @unique
+  owner   User @relation(fields: [ownerId], references: [id])
+  ownerId String
+  url String 
+  description String?
 }

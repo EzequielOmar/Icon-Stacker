@@ -1,8 +1,8 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import styles from "@/styles/Home.module.css";
-import NavBar from "@/_components/NavBar";
-import { useRedirectAuthenticated } from "@/_middlewares/authMiddleware";
+import NavBar from "@/components/NavBar";
+import { useRedirectAuthenticated } from "@/hooks/useRedirect";
 
 const inter = Inter({ subsets: ["latin"] });
 

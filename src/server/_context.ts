@@ -35,12 +35,12 @@ export async function createContext({
     //* console.info(googleToken);
     const session = getChunkedCookie(req, "next-auth.session-token");
     const token = await decodeJWT(session);
-    if (token) {
-      const { sub } = token;
-      return { id: sub };
+    if (token?.sub) {
+      return { id: token.sub };
     }
     return null;
   }
+  
   const user = await getUserFromCookie();
   return {
     user,

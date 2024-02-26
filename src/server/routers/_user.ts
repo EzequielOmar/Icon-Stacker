@@ -1,15 +1,10 @@
-import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 import User, { publicUser } from "../db/User";
+import { EmailValidator, PasswordValidator, object } from "@/utils/validators";
 
 export const userRouter = router({
   signup: publicProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        password: z.string().min(6),
-      })
-    )
+    .input(object({ email: EmailValidator, password: PasswordValidator }))
     .mutation(async (opts) => {
       const { email, password } = opts.input;
       try {

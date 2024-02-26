@@ -1,17 +1,25 @@
-import { z } from "zod";
 import { privateProcedure, router } from "../trpc";
+import Bookmark from "../db/Bookmark";
+import { UrlValidator, object } from "@/utils/validators";
 
 export const bookmarkRouter = router({
-  all: privateProcedure
-    /*.input(
-      z.object({
-        email: z.string().email(),
-        password: z.string().min(6),
-      })
-    )*/
-    .query(async (opts) => {
+  allBookmarks: privateProcedure.query(async (opts) => {
+    const { id } = opts.ctx.user;
+    try {
+      const bookmarks = await Bookmark.getBookmarks(id);
+      return bookmarks;
+    } catch (error) {
+      throw error;
+    }
+  }),
+  newBookmark: privateProcedure
+    .input(object({ url: UrlValidator }))
+    .mutation(async (opts) => {
+      const { url } = opts.input;
+      const { id } = opts.ctx.user;
       try {
-        return { id: opts.ctx.user.id };
+        const bookmark = await Bookmark.createBookmark(url, id);
+        return bookmark;
       } catch (error) {
         throw error;
       }

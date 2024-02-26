@@ -2,6 +2,11 @@ import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import User, { publicUser } from "@/server/db/User";
+import {
+  EmailValidator,
+  PasswordValidator,
+  validate,
+} from "@/utils/validators";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -18,10 +23,16 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials, req): Promise<any> => {
-        const user: publicUser | null = await User.checkUserByEmailAndPassword(
-          credentials?.email || "",
-          credentials?.password || ""
+        const validation = validate(
+          { email: EmailValidator, password: PasswordValidator },
+          { email: credentials?.email, password: credentials?.password }
         );
+        let user: publicUser | null = null;
+        if (validation.success)
+          user = await User.checkUserByEmailAndPassword(
+            credentials?.email || "",
+            credentials?.password || ""
+          );
         return user ? user : Promise.resolve(null);
       },
     },
@@ -58,7 +69,6 @@ export const authOptions: NextAuthOptions = {
           user.last_name = exists.last_name;
           return user;
         } catch (err) {
-          console.error(err);
           return false;
         }
       }
