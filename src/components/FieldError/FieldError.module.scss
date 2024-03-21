@@ -1,4 +1,9 @@
 .error {
-  font-size: 1.2rem;
-  margin: 5px 0 0 8px;
+  color: var(--red);
+  font-size: 1rem;
+  line-height: 1.2;
+  background-color: var(--color-light-red);
+  border-radius: 8px;
+  word-wrap: break-word;
+  padding: 6px 8px;
 }

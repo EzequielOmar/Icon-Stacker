@@ -1,14 +1,16 @@
 import "@/styles/globals.css";
 import type { AppType, AppProps } from "next/app";
-
-import SessionContext from "@/contexts/sessionContext";
+import { SessionProvider } from "next-auth/react";
 import trpc from "@/utils/trpc";
 
-const App: AppType = ({ Component, pageProps }: AppProps) => {
+const App: AppType = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) => {
   return (
-    <SessionContext>
+    <SessionProvider session={session}>
       <Component {...pageProps} />
-    </SessionContext>
+    </SessionProvider>
   );
 };
 

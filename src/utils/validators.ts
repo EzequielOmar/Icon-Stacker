@@ -43,3 +43,9 @@ export const validate = (validators: any, fields: any) => {
 export const object = (validators: any) => {
   return z.object(validators);
 };
+
+export const FileValidator =   z.object({
+  name: z.string(),
+  type: z.string(),
+  size: z.number(),
+});

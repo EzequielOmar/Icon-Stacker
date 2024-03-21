@@ -5,6 +5,8 @@ import FieldError from "../FieldError";
 import FieldLabel from "../FieldLabel";
 import Input from "../Input";
 import styles from "./PasswordField.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
@@ -42,11 +44,15 @@ const PasswordField = forwardRef<HTMLInputElement, TextFieldProps>(
             })}
             onClick={togglePasswordVisibility}
           >
-            {isPasswordVisible ? "x" : "0"}
+            {isPasswordVisible ? (
+              <FontAwesomeIcon icon={faEye} width={20} />
+            ) : (
+              <FontAwesomeIcon icon={faEyeSlash} width={20} />
+            )}
           </button>
         </div>
         {error && error.length > 0 && (
-          <FieldError className={styles.error}>{error}</FieldError>
+          <FieldError>* {error} *</FieldError>
         )}
       </div>
     );

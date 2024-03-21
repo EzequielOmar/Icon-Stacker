@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  * {
+    margin: 2px 0;
+  }
+}
+
+.restore {
+  width: 80%;
+  padding: 2px 0;
+  text-align: start;
+  justify-content: flex-end;
+  display: flex;
+  & a:hover {
+    text-decoration: underline;
+    border-radius: 3px;
+    background-color: rgb(var(--card-rgb), 0.35);
+  }
+}
+
+.horizontalBreak {
+  width: 80%;
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #ccc;
+}
+
+.text {
+  padding: 0 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 14px;
+}

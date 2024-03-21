@@ -1,10 +1,12 @@
 .input {
-  padding: 0 12px;
+  width: 100%;
+  padding: 3px 12px;
   border-radius: 12px;
   font-size: 1.4rem;
 
   &:hover,
   &:focus {
+    border-color: var(--color-medium-light-blue);
   }
 
   &::placeholder {
@@ -13,15 +15,22 @@
   }
 
   &.invalid {
+    color: var(--color-dark-red);
+    border-color: var(--color-dark-red);
 
     &::placeholder {
+      color: var(--color-dark-red);
     }
   }
 
   &[disabled] {
+    color: var(--color-medium-light-gray);
+    background-color: var(--color-light-gray);
+    border-color: var(--color-medium-light-gray);
     cursor: not-allowed;
 
     &::placeholder {
+      color: var(--color-medium-light-gray);
     }
   }
 }

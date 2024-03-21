@@ -10,25 +10,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String    @id @default(uuid()) @unique
-  email       String    @unique
-  password    String?   
+model User {  
+  id            String    @id @default(uuid()) @unique
+  email         String    @unique
+  password      String?   
   from_provider Boolean @default(false)
-  name        String?
-  last_name   String?
-  picture String?
-  is_verified Boolean   @default(false)
-  bookmarks Bookmark[]
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  deleted_at  DateTime?
+  name          String?
+  last_name     String?
+  picture       String?
+  is_verified   Boolean   @default(false)
+  bookmarks     Bookmark[]
+  folders       Folder[]
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  deleted_at    DateTime?
+}
+
+model Folder { 
+  id             String    @id @default(uuid()) @unique
+  title          String
+  owner          User      @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  owner_id       String
+  bookmarks      Bookmark[] 
+  folder         Folder?   @relation("child_folders", fields: [folder_id], references: [id], onDelete: Cascade)
+  folder_id      String?
+  child_folders  Folder[]  @relation("child_folders")
+  x            Int       @default(0)
+  y            Int       @default(0)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  deleted_at     DateTime?
 }
 
 model Bookmark {
-  id       String  @id @default(uuid()) @unique
-  owner   User @relation(fields: [ownerId], references: [id])
-  ownerId String
-  url String 
-  description String?
+  id           String    @id @default(uuid()) @unique
+  owner        User      @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  owner_id     String
+  folder       Folder?   @relation(fields: [folder_id], references: [id], onDelete: Cascade)
+  folder_id    String?
+  url          String
+  title        String?
+  description  String?
+  picture      String?
+  x            Int       @default(0)
+  y            Int       @default(0)
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  deleted_at   DateTime?
 }

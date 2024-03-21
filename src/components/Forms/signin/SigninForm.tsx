@@ -1,7 +1,6 @@
-import PasswordField from "@/components/PasswordField";
+import PasswordField from "@/components/PasswordField/PasswordField";
 import SendFormButton from "@/components/SendFormButton";
 import TextField from "@/components/TextField";
-import classNames from "classnames";
 import styles from "./SigninForm.module.scss";
 import { useRedirectAuthenticated } from "@/hooks/useRedirect";
 import { FormEvent, useRef, useState } from "react";
@@ -11,6 +10,8 @@ import {
   PasswordValidator,
   validate,
 } from "@/utils/validators";
+import Link from "next/link";
+import GoogleSigninButton from "@/components/GoogleSigninButton";
 
 export default function SigninForm() {
   useRedirectAuthenticated("/home");
@@ -46,9 +47,8 @@ export default function SigninForm() {
     if (!res?.ok) setServerError("An error occurred. Please try again.");
   };
 
-  
   return (
-    <form className={classNames(styles.form)} onSubmit={handleLogin}>
+    <form className={styles.container} onSubmit={handleLogin}>
       <TextField
         label="E-mail"
         name="email"
@@ -63,12 +63,20 @@ export default function SigninForm() {
         ref={passwordRef}
         error={errors.password}
       />
-      <div className={styles.controls}>
-        <SendFormButton size="md" variant="contained" color="blue">
-          Sign In
-        </SendFormButton>
-        <span onClick={() => signIn("google")}>Sign in with Google</span>
+      <div className={styles.restore}>
+        <Link href="/not-implemented">
+          <p>Restore Password</p>
+        </Link>
       </div>
+      <SendFormButton size="md" variant="contained" color="blue">
+        Sign In
+      </SendFormButton>
+      <div className={styles.horizontalBreak}>
+        <div className={styles.line}></div>
+        <p className={styles.text}>or</p>
+        <div className={styles.line}></div>
+      </div>
+      <GoogleSigninButton />
       <div>{serverError}</div>
     </form>
   );

@@ -1,0 +1,11 @@
+.container {
+  & .layout {
+    & .cell {
+      z-index: 1;
+    }
+    position: relative;
+  }
+  max-height: 500px;
+
+  flex: 1;
+}

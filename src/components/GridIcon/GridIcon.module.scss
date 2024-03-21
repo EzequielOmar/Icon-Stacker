@@ -1,0 +1,61 @@
+.container {
+  & a {
+    & img {
+      width: 40px;
+      height: 40px;
+    }
+    height: auto;
+    display: block;
+    width: auto;
+  }
+  & .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.container:hover .actionsToggle {
+  opacity: 1;
+}
+
+.actionsToggle {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  font-size: 16px;
+  background: #ffffff70;
+  border-radius: 15px;
+  padding: 5px;
+  display: flex;
+  opacity: 0;
+}
+
+.actionsContainer {
+  & .actionButton {
+    &:hover {
+      background-color: #f0f0f090;
+    }
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    padding: 5px;
+    width: 100%;
+    text-align: left;
+    display: flex;
+  }
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+ // z-index: 2000;
+}

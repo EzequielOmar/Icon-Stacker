@@ -1,0 +1,26 @@
+.main {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  padding-bottom: 4rem;
+}
+
+.redirect {
+  max-width: 100% !important;
+  padding: 0.7rem 0;
+  display: flex;
+  justify-content: center;
+  & a {
+    padding: 0 0.5rem;
+    font-size: 1.1rem;
+    text-decoration: underline;
+    &:hover {
+      border-radius: 3px;
+      background-color: rgb(var(--card-rgb), 0.35);
+    }
+  }
+}

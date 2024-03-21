@@ -1,93 +1,76 @@
-import { useRedirectUnauthenticated } from "@/hooks/useRedirect";
 import trpc from "@/utils/trpc";
-import { getSession, signOut, useSession } from "next-auth/react";
-import React, { FormEvent, useState } from "react";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { AppRouter, appRouter } from "@/server/routers/_app";
-import { createContext } from "@/server/_context";
-import * as trpcNext from "@trpc/server/adapters/next";
+import { signOut } from "next-auth/react";
+import React, { useEffect, useState } from "react";
+import styles from "./Home.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowRightFromBracket,
+  faGear,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { useRedirectUnauthenticated } from "@/hooks/useRedirect";
+import BookmarkUrlInput from "@/components/BookmarkUrlInput";
+import GridPanel from "@/components/GridPanel";
+import FolderInput from "@/components/FolderInput";
+import SideBarNavigation from "@/components/SideBarNavigation";
+import { useRouter } from "next/router";
+import FileUpload from "@/components/FileUpload";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const ctx = await createContext({
-    req: context.req,
-    res: context.res,
-  } as trpcNext.CreateNextContextOptions);
-  if (!ctx.user)
-    return {
-      redirect: {
-        destination: "/signin",
-        permanent: false,
-      },
-    };
-  const helpers = createServerSideHelpers<AppRouter>({
-    router: appRouter,
-    ctx: ctx,
-  });
-  await helpers.allBookmarks.prefetch();
-  return {
-    props: {
-      trpcState: helpers.dehydrate(),
-    },
-  };
-}
-
-export default function Home(
-  props: InferGetServerSidePropsType<typeof getServerSideProps>
-) {
+export default function Home() {
   useRedirectUnauthenticated("/signin");
-  const { data: session, status } = useSession();
-  const [bookmarks, bookmarkQueries] = trpc.allBookmarks.useSuspenseQuery();
+  const router = useRouter();
+  const [folderId, setFolderId] = useState<string | null>(null);
+  const allIconsQuery = trpc.allIconsByLevel.useQuery({
+    parentFolderId: folderId || null,
+  });
+  const foldersQuery = trpc.allFolders.useQuery();
+
+  useEffect(() => {
+    setFolderId(router.query.folderId as string);
+  }, [router.query.folderId]);
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
   };
 
-  const [url, setUrl] = useState("");
-  const [error, setError] = useState("");
+  if (allIconsQuery.isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  const mutation = trpc.newBookmark.useMutation({
-    onSuccess: () => {
-      setUrl("");
-      setError("");
-      bookmarkQueries.refetch();
-    },
-    onError: (error: any) => {
-      setError(error.message);
-    },
-  });
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    mutation.mutate({ url });
-  };
+  if (allIconsQuery.isError) {
+    return <div>Error!</div>;
+  }
 
   return (
-    <>
-      <div>home!</div>
-      <pre>{JSON.stringify(session?.user, null, 2)}</pre>
+    <div className={styles.main}>
+      <BookmarkUrlInput allIconsQuery={allIconsQuery} />
+      <FolderInput
+        allIconsQuery={allIconsQuery}
+        allFoldersQuery={foldersQuery}
+      />
+      <FileUpload />
 
-      <button onClick={handleLogout}>Logout</button>
+      <div className={styles.container}>
+        <SideBarNavigation allFoldersQuery={foldersQuery} />
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="URL"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-        />
-        <button type="submit">Add Bookmark</button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </form>
+        {allIconsQuery.data?.length ? (
+          <GridPanel allIconsQuery={allIconsQuery}  allFoldersQuery={foldersQuery}/>
+        ) : (
+          "no data"
+        )}
+      </div>
 
-      {bookmarks?.length ? (
-        <>
-          <span>Data:</span>
-          <pre>{JSON.stringify(bookmarks, null, 2)}</pre>
-        </>
-      ) : (
-        "no data"
-      )}
-    </>
+      <div className={styles.actions}>
+        <button>
+          <FontAwesomeIcon icon={faGear} size="2xl" />
+        </button>
+        <button>
+          <FontAwesomeIcon icon={faUser} size="2xl" />
+        </button>
+        <button onClick={handleLogout}>
+          <FontAwesomeIcon icon={faArrowRightFromBracket} size="2xl" />
+        </button>
+      </div>
+    </div>
   );
 }

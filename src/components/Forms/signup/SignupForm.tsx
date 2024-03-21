@@ -7,12 +7,13 @@ import {
   RepeatPasswordValidator,
   validateWithRepeatPassword,
 } from "@/utils/validators";
-import classNames from "classnames";
 import { signIn } from "next-auth/react";
 import { FormEvent, useRef, useState } from "react";
 import TextField from "@/components/TextField";
-import PasswordField from "@/components/PasswordField";
+import PasswordField from "@/components/PasswordField/PasswordField";
 import SendFormButton from "@/components/SendFormButton";
+import Link from "next/link";
+import GoogleSigninButton from "@/components/GoogleSigninButton";
 
 export default function SignupForm() {
   useRedirectAuthenticated("/home");
@@ -62,7 +63,7 @@ export default function SignupForm() {
   };
 
   return (
-    <form className={classNames(styles.form)} onSubmit={handleSubmit}>
+    <form className={styles.container} onSubmit={handleSubmit}>
       <TextField
         label="E-mail"
         name="email"
@@ -82,16 +83,26 @@ export default function SignupForm() {
         label="Repeat Password"
         name="passwordRepeat"
         ref={repeatPasswordRef}
-        error={errors.passwordRepeat}
+        error={errors.repeatPassword}
       />
       <div className={styles.controls}>
         <SendFormButton size="md" variant="contained" color="blue">
-          Sign In
+          Sign Up
         </SendFormButton>
       </div>
       <div>{serverError}</div>
       <div>{signup.isPending && "Loading..."}</div>
-      <span onClick={() => signIn("google")}>Sign up with Google</span>
+      <p className={styles.terms}>
+        By clicking 'Sign Up', you agree to the{" "}
+        <Link href="/not-implemented"> Terms of Service</Link> &{" "}
+        <Link href="/not-implemented"> Privacy Policy</Link>.
+      </p>
+      <div className={styles.horizontalBreak}>
+        <div className={styles.line}></div>
+        <p className={styles.text}>or</p>
+        <div className={styles.line}></div>
+      </div>
+      <GoogleSigninButton />
     </form>
   );
 }

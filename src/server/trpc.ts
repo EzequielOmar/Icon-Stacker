@@ -26,19 +26,19 @@ const closePrismaConnection = async () => {
   }
 };
 
-process.on('exit', async (code) => {
+process.on("exit", async (code) => {
   await closePrismaConnection();
   console.error(`Process exited with code ${code}`);
 });
 
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   await closePrismaConnection();
-  console.error('Received SIGINT. Exiting...');
+  console.error("Received SIGINT. Exiting...");
   process.exit();
 });
 
-process.on('SIGTERM', async () => {
+process.on("SIGTERM", async () => {
   await closePrismaConnection();
-  console.error('Received SIGTERM. Exiting...');
+  console.error("Received SIGTERM. Exiting...");
   process.exit();
 });

@@ -1,0 +1,27 @@
+.main {
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+}
+
+.actions {
+  & button {
+    &:hover {
+      opacity: 1 !important;
+    }
+    opacity: 0.6;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0 1rem;
+  }
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  z-index: 9999;
+  padding: 3rem;
+  display: flex;
+  justify-content: flex-end;
+}
